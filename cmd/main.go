@@ -7,7 +7,7 @@ import (
 func main() {
 	// Create and initialize the application
 	application := &app.App{}
-	application.Initialize()
+	application.Init()
 
 	// Run the application
 	application.Run()

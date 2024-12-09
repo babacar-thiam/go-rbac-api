@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/babacar-thiam/go-rbac-api/internal/database"
+	"github.com/babacar-thiam/go-rbac-api/internal/db"
 )
 
 type App struct {
@@ -16,10 +16,10 @@ type App struct {
 	Router *mux.Router
 }
 
-// Initialize sets up the database connection
-func (a *App) Initialize() {
+// Init sets up the database connection
+func (a *App) Init() {
 	var err error
-	a.db, err = database.Connect()
+	a.db, err = db.OpenDB()
 	if err != nil {
 		log.Fatalf("failed to intialize database connection: %v", err)
 	}
@@ -30,7 +30,7 @@ func (a *App) Initialize() {
 
 // Run starts the application
 func (a *App) Run() {
-	defer database.Close(a.db)
+	defer db.CloseDB(a.db)
 
 	port := os.Getenv("PORT")
 	if port == "" {

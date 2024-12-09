@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"database/sql"
@@ -7,17 +7,10 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/subosito/gotenv"
 )
 
-// Connect oppens a database connection
-func Connect() (*sql.DB, error) {
-	// Load .env file
-	err := gotenv.Load(".env")
-	if err != nil {
-		log.Fatal("error loading .env file")
-	}
-
+// OpenDB oppens a database connection
+func OpenDB() (*sql.DB, error) {
 	// Read environment variables
 	username := os.Getenv("DB_USER")
 	password := os.Getenv("DB_PASSWORD")
@@ -44,8 +37,8 @@ func Connect() (*sql.DB, error) {
 	return db, nil
 }
 
-// Close closes the database connection
-func Close(db *sql.DB) {
+// CloseDB closes the database connection
+func CloseDB(db *sql.DB) {
 	if err := db.Close(); err != nil {
 		log.Printf("error closing database connection: %v", err)
 	}
