@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"github.com/babacar-thiam/go-rbac-api/internal/app"
+)
 
 func main() {
-	fmt.Println("Role Base Access Control API")
+	// Create and initialize the application
+	application := &app.App{}
+	application.Initialize()
+
+	// Run the application
+	application.Run()
 }
