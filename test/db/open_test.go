@@ -12,7 +12,7 @@ import (
 
 func TestMain(m *testing.M) {
 	// Load the .env.test file
-	err := gotenv.Load("./.env.test")
+	err := gotenv.Load("../../.env.test")
 	if err != nil {
 		log.Fatalf("error loading .env file")
 	}
