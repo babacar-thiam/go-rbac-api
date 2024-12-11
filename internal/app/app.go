@@ -24,6 +24,11 @@ func (a *App) Init() {
 		log.Fatalf("failed to intialize database connection: %v", err)
 	}
 
+	// Seed roles
+	if seedErr := db.SeedRole(a.db); seedErr != nil {
+		log.Fatalf("failed to seed roles: %v", seedErr)
+	}
+
 	// Initialize router
 	a.Router = mux.NewRouter()
 }
