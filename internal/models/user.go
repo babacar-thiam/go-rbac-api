@@ -10,7 +10,7 @@ import (
 // User holds the structure of user model
 type User struct {
 	ID           uuid.UUID `json:"id"`
-	RoleID       uuid.UUID `json:"role_id"`
+	Role         string    `json:"role"`
 	FullName     string    `json:"full_name"`
 	EmailAddress string    `json:"email_address"`
 	PhoneNumber  string    `json:"phone_number"`

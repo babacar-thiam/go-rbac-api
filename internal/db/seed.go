@@ -45,7 +45,6 @@ func SeedRole(db *sql.DB) error {
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
 
 	// Check and create each role
 	for _, role := range defaultRoles {

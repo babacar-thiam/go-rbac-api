@@ -1,7 +1,6 @@
 package services
 
 import (
-	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -21,7 +20,7 @@ func NewService(repo *repositories.Repository) *Service {
 }
 
 // AddRole creates a new role
-func (s *Service) AddRole(ctx context.Context, name, description string) error {
+func (s *Service) AddRole(name, description string) error {
 	role := models.Role{
 		ID:          uuid.New(),
 		Name:        name,
@@ -29,5 +28,10 @@ func (s *Service) AddRole(ctx context.Context, name, description string) error {
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
-	return s.repo.SaveRole(ctx, role)
+	return s.repo.SaveRole(role)
+}
+
+// GetAllRoles retrieves all the existing roles
+func (s *Service) GetAllRoles() ([]models.Role, error) {
+	return s.repo.FindAllRoles()
 }

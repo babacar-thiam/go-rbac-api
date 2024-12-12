@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 create table if not exists users (
   id char(36) primary key,
-  role_id char(36) not null,
+  role varchar(255) not null,
   full_name varchar(255) not null,
   email_address varchar(50) unique not null,
   phone_number varchar(20) unique not null,

@@ -9,6 +9,9 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/babacar-thiam/go-rbac-api/internal/db"
+	"github.com/babacar-thiam/go-rbac-api/internal/handlers"
+	"github.com/babacar-thiam/go-rbac-api/internal/repositories"
+	"github.com/babacar-thiam/go-rbac-api/internal/services"
 )
 
 type App struct {
@@ -31,6 +34,17 @@ func (a *App) Init() {
 
 	// Initialize router
 	a.Router = mux.NewRouter()
+
+	// Set up API routes with prefix "api/v1"
+	router := a.Router.PathPrefix("/api/v1").Subrouter()
+
+	// Initialize role repository, service and handler
+	roleRepo := repositories.NewRepository(a.db)
+	roleService := services.NewService(roleRepo)
+	roleHandler := handlers.NewHandler(roleService)
+
+	// Define routes for roles
+	router.HandleFunc("/roles", roleHandler.GetRoles).Methods("GET")
 }
 
 // Run starts the application
