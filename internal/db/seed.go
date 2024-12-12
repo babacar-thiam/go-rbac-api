@@ -1,10 +1,7 @@
 package db
 
 import (
-	"context"
 	"database/sql"
-	"errors"
-	"fmt"
 	"log"
 	"time"
 
@@ -40,57 +37,43 @@ func SeedRole(db *sql.DB) error {
 		},
 	}
 
-	// Initialize role repository
+	// Intialize roles repository
 	roleRepo := repositories.NewRepository(db)
 
-	// Begin database transaction
+	// Start the transaction
 	tx, err := db.Begin()
 	if err != nil {
-		return fmt.Errorf("failed to begin transaction: %v", err)
+		return err
 	}
-	defer func() {
-		// Ensure the rollback in case of failure
-		if rollbackErr := tx.Rollback(); rollbackErr != nil &&
-			!errors.Is(rollbackErr, sql.ErrTxDone) {
-			log.Printf("failed to rollback transaction: %v", rollbackErr)
-		}
-	}()
+	defer tx.Rollback()
 
-	// Use context with timeout for queries
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	log.Printf("starting role seeding with %d default roles", len(defaultRoles))
-
-	// Iterate through de default roles
+	// Check and create each role
 	for _, role := range defaultRoles {
-		// Check if role already exists
-		existingRole, getErr := roleRepo.FindRoleByName(ctx, role.Name)
+		// Check if the role already exists
+		existingRole, err := roleRepo.FindRoleByName(role.Name)
+		if err != nil {
+			log.Printf("error checking role %s: %v", role.Name, err)
+			return err
+		}
 
-		// If we got ErrNoRows, it means the role doesn't exist and we should create it
-		if errors.Is(getErr, sql.ErrNoRows) {
-			// Role does not exist, create it
-			if createErr := roleRepo.SaveRole(ctx, role); createErr != nil {
-				return fmt.Errorf("failed to create role %s: %v", role.Name, createErr)
-			}
-			log.Printf("created role: %s", role.Name)
+		if existingRole != nil {
+			log.Printf("role %s already exists, skipping...", role.Name)
 			continue
 		}
 
-		// If we get any other error, return it
-		if getErr != nil {
-			return fmt.Errorf("failed to check role %s: %v", role.Name, getErr)
+		// Create role if it does not exist
+		err = roleRepo.SaveRole(role)
+		if err != nil {
+			return err
 		}
-
-		// If we get here, the role exists
-		log.Printf("role %s already exists, skipping...", existingRole.Name)
+		log.Printf("created role: %s", role.Name)
 	}
 
-	// Commit the transaction
-	if commitErr := tx.Commit(); commitErr != nil {
-		return fmt.Errorf("faild to commit transaction: %v", commitErr)
+	// Commit transaction
+	if err := tx.Commit(); err != nil {
+		return err
 	}
 
-	log.Printf("role seeding completed successfully")
+	log.Println("role seeding completed successfully")
 	return nil
 }
